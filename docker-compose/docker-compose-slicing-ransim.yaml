@@ -1,0 +1,124 @@
+version: '3.8'
+services:
+    oai-gnb1:
+        image: oaisoftwarealliance/oai-gnb:develop
+        privileged: true
+        container_name: rfsim5g-oai-gnb1
+        environment: 
+            RFSIMULATOR: server
+            USE_ADDITIONAL_OPTIONS: --sa -E --rfsim --log_config.global_log_options level,nocolor,time
+        volumes:
+            - ./ran-conf/gnb1.conf:/opt/oai-gnb/etc/gnb.conf
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.153
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-softmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+    
+    oai-gnb2:
+        image: oaisoftwarealliance/oai-gnb:develop
+        privileged: true
+        container_name: rfsim5g-oai-gnb2
+        environment: 
+            RFSIMULATOR: server
+            USE_ADDITIONAL_OPTIONS: --sa -E --rfsim --log_config.global_log_options level,nocolor,time
+        volumes:
+            - ./ran-conf/gnb2.conf:/opt/oai-gnb/etc/gnb.conf
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.155
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-softmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    oai-gnb3:
+        image: oaisoftwarealliance/oai-gnb:develop
+        privileged: true
+        container_name: rfsim5g-oai-gnb3
+        environment: 
+            RFSIMULATOR: server
+            USE_ADDITIONAL_OPTIONS: --sa -E --rfsim --log_config.global_log_options level,nocolor,time
+        volumes:
+            - ./ran-conf/gnb3.conf:/opt/oai-gnb/etc/gnb.conf
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.157
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-softmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+
+    oai-nr-ue1:
+        image: oaisoftwarealliance/oai-nr-ue:develop
+        privileged: true
+        container_name: rfsim5g-oai-nr-ue1
+        environment: 
+            RFSIMULATOR: 192.168.70.153
+            USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 -C 3619200000 --nokrnmod --log_config.global_log_options level,nocolor,time
+        depends_on:
+            - oai-gnb1
+        volumes:
+            - ./ran-conf/ue1.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.154
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-uesoftmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    oai-nr-ue2:
+        image: oaisoftwarealliance/oai-nr-ue:develop
+        privileged: true
+        container_name: rfsim5g-oai-nr-ue2
+        environment: 
+            RFSIMULATOR: 192.168.70.155
+            USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 -C 3619200000 --nokrnmod --log_config.global_log_options level,nocolor,time
+        depends_on:
+            - oai-gnb2
+        volumes:
+            - ./ran-conf/ue2.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.156
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-uesoftmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    oai-nr-ue3:
+        image: oaisoftwarealliance/oai-nr-ue:develop
+        privileged: true
+        container_name: rfsim5g-oai-nr-ue3
+        environment: 
+            RFSIMULATOR: 192.168.70.157
+            USE_ADDITIONAL_OPTIONS: -E --sa --rfsim -r 106 --numerology 1 -C 3619200000 --nokrnmod --log_config.global_log_options level,nocolor,time
+        depends_on:
+            - oai-gnb3
+        volumes:
+            - ./ran-conf/ue3.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.158
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-uesoftmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+networks:
+    public_net:
+        external:
+            name: demo-oai-public-net
+    public_net_access:
+        external:
+            name: oai-public-access
